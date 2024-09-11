@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import Link from 'next/link';
 
-const jobiteDashboard = () => {
+const JobiteDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     experience: [],
@@ -365,4 +365,4 @@ const jobiteDashboard = () => {
   );
 };
 
-export default jobiteDashboard;
+export default JobiteDashboard;
