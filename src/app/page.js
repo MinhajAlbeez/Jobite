@@ -321,7 +321,7 @@ const JobiteDashboard = () => {
                   className="bg-white rounded-lg shadow p-6"
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-lg">{candidate.name}</h3>
+                    <h3 className="font-semibold text-lg text-gray-900">{candidate.name}</h3>
                     <button className="text-gray-400">
                       <svg
                         className="w-6 h-6"
@@ -346,7 +346,7 @@ const JobiteDashboard = () => {
                     {candidate.skills.map((skill) => (
                       <span
                         key={skill}
-                        className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded"
+                        className="bg-gray-100 text-black text-xs px-2 py-1 rounded"
                       >
                         {skill}
                       </span>
