@@ -197,7 +197,7 @@ const JobiteDashboard = () => {
           {/* Left Sidebar - Filters */}
           <div className="w-64 bg-white rounded-lg shadow p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="font-semibold">Filter</h2>
+              <h2 className="font-semibold text-black">Filter</h2>
               <button
                 className="text-sm text-blue-500"
                 onClick={clearAllFilters}
@@ -207,7 +207,7 @@ const JobiteDashboard = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Location</label>
+              <label className="block text-sm font-medium mb-2 text-black">Location</label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
@@ -226,9 +226,9 @@ const JobiteDashboard = () => {
                       id={location}
                       checked={filters.locations.includes(location)}
                       onChange={() => handleFilterToggle("locations", location)}
-                      className="mr-2"
+                      className="mr-2 "
                     />
-                    <label htmlFor={location} className="text-sm">
+                    <label htmlFor={location} className="text-sm ext-black">
                       {location}
                     </label>
                   </div>
@@ -237,7 +237,7 @@ const JobiteDashboard = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium mb-2 text-black">
                 Availability
               </label>
               {availabilityOptions.map((type) => (
@@ -249,7 +249,7 @@ const JobiteDashboard = () => {
                     onChange={() => handleFilterToggle("employmentType", type)}
                     className="mr-2"
                   />
-                  <label htmlFor={type} className="text-sm">
+                  <label htmlFor={type} className="text-sm text-black">
                     {type}
                   </label>
                 </div>
@@ -341,7 +341,7 @@ const JobiteDashboard = () => {
                   <p className="text-sm text-gray-600 mb-2">
                     {candidate.expectedSalary.toLocaleString()} PKR per month
                   </p>
-                  <p className="text-sm mb-4">{candidate.intro}</p>
+                  <p className="text-sm mb-4 text-black">{candidate.intro}</p>
                   <div className="flex flex-wrap gap-2 mb-4">
                     {candidate.skills.map((skill) => (
                       <span
