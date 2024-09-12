@@ -228,7 +228,7 @@ const JobiteDashboard = () => {
                       onChange={() => handleFilterToggle("locations", location)}
                       className="mr-2 "
                     />
-                    <label htmlFor={location} className="text-sm ext-black">
+                    <label htmlFor={location} className="text-sm text-black">
                       {location}
                     </label>
                   </div>
@@ -257,7 +257,7 @@ const JobiteDashboard = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium mb-2 text-black">
                 Expected Salary (PKR)
               </label>
               <Slider
@@ -276,7 +276,7 @@ const JobiteDashboard = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Skills</label>
+              <label className="block text-sm font-medium mb-2 text-black">Skills</label>
               <div className="max-h-40 overflow-y-auto">
                 {skillOptions.map((skill) => (
                   <div key={skill} className="flex items-center mb-2">
@@ -287,7 +287,7 @@ const JobiteDashboard = () => {
                       onChange={() => handleFilterToggle("skills", skill)}
                       className="mr-2"
                     />
-                    <label htmlFor={skill} className="text-sm">
+                    <label htmlFor={skill} className="text-sm text-black">
                       {skill}
                     </label>
                   </div>
