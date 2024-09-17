@@ -1,264 +1,275 @@
 "use client";
-
-import React, { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Upload, Moon, Sun } from 'lucide-react';
+import { useState, useRef, useEffect } from "react";
+import axios from "axios";
+import Container from "../components/Container";
+import Navbar from "../components/Navbar";
+import FormField from "../helpers/FormField";
+import SkillInput from "../helpers/SkillInput";
+import ResumeUpload from "../components/ResumeUpload";
+import Button from "../helpers/Button";
+import CitySelector from "../components/CitySelector";
+import Link from "next/link";
+import TextField from "../helpers/TextField";
+import { toast } from 'react-toastify'; // Import toast
 
 const pakistaniCities = [
-  'Karachi', 'Lahore', 'Islamabad', 'Rawalpindi', 'Faisalabad', 
-  'Multan', 'Peshawar', 'Quetta', 'Sialkot', 'Gujranwala'
+  "Karachi",
+  "Lahore",
+  "Islamabad",
+  "Rawalpindi",
+  "Faisalabad",
+  "Multan",
+  "Peshawar",
+  "Quetta",
+  "Sialkot",
+  "Gujranwala",
 ];
 
 const skillsList = [
-  'JavaScript', 'React', 'Node.js', 'Python', 'Java', 'C++', 'SQL',
-  'Machine Learning', 'Data Analysis', 'Project Management', 'Agile',
-  'UI/UX Design', 'DevOps', 'Cloud Computing', 'Cybersecurity'
+  "JavaScript",
+  "React",
+  "Node.js",
+  "Python",
+  "Java",
+  "C++",
+  "SQL",
+  "Machine Learning",
+  "Data Analysis",
+  "Project Management",
+  "Agile",
+  "UI/UX Design",
+  "DevOps",
+  "Cloud Computing",
+  "Cybersecurity",
 ];
 
 const ResumePortal = () => {
-  const [city, setCity] = useState('');
+  const [city, setCity] = useState("");
+  const [name, setName] = useState("");
+  const [jobtype, setJobType] = useState("");
   const [filteredCities, setFilteredCities] = useState([]);
-  const [fileName, setFileName] = useState('');
+  const [fileName, setFileName] = useState("");
   const [salary, setSalary] = useState(25000);
   const [darkMode, setDarkMode] = useState(false);
   const [skills, setSkills] = useState([]);
-  const [skillInput, setSkillInput] = useState('');
-  const [filteredSkills, setFilteredSkills] = useState([]);
+  const [skillInput, setSkillInput] = useState("");
   const fileInputRef = useRef(null);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [aboutUsValue, setAboutUsValue] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState(""); // Initialize state
+  const [selectedProvince, setSelectedProvince] = useState(""); 
+  const [resumeFile, setResumeFile] = useState(null); // State to hold the uploaded file
 
   useEffect(() => {
-    const savedMode = localStorage.getItem('darkMode');
+    const savedMode = localStorage.getItem("darkMode");
     if (savedMode) {
       setDarkMode(JSON.parse(savedMode));
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
     if (darkMode) {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   }, [darkMode]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let payload = {
+      fullName: name, // Match the schema field
+      city: city,
+      expectedSalary: Number(salary), // Match the schema field
+      jobType: jobtype,
+      skills: skills,
+      aboutUs: aboutUsValue,
+      resume: resumeFile, // This should contain the Base64 string
+    };
+
+    console.log("Resume File:", resumeFile); // Add this before sending the payload
+    console.log("Payload before sending:", payload); // Check the payload data
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/info/createInfo",
+        payload
+      );
+      console.log("Response from server:", response.data);
+      toast.success('Submission successful!'); // Show success toast
+
+      // Redirect after a 3-second delay
+      setTimeout(() => {
+        window.location.href = '/'; // Redirect to the desired page
+      }, 3000);
+    } catch (error) {
+      console.error("There was an error!", error);
+      toast.error('Submission failed. Please try again.'); // Show error toast
+    }
+  };
 
   const handleCityChange = (e) => {
     const value = e.target.value;
     setCity(value);
     setFilteredCities(
-      pakistaniCities.filter(c => c.toLowerCase().includes(value.toLowerCase()))
+      pakistaniCities.filter((c) =>
+        c.toLowerCase().includes(value.toLowerCase())
+      )
     );
   };
-
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
-    if (file && file.type === 'application/pdf') {
+    if (file && file.type === "application/pdf") {
       setFileName(file.name);
+  
+      // Read the file as Base64
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // Convert to Base64
+      reader.onloadend = () => {
+        setResumeFile(reader.result); // Store the Base64 string
+      };
     } else {
-      alert('Please upload a PDF file.');
-      e.target.value = '';
+      alert("Please upload a PDF file.");
+      e.target.value = "";
     }
   };
+  
+  
 
   const handleSalaryChange = (e) => {
     setSalary(e.target.value);
   };
 
-  const handleSkillInputChange = (e) => {
-    const value = e.target.value;
-    setSkillInput(value);
-    setFilteredSkills(
-      skillsList.filter(skill => 
-        skill.toLowerCase().includes(value.toLowerCase()) && !skills.includes(skill)
-      )
-    );
-  };
-
-  const addSkill = (skill) => {
-    if (!skills.includes(skill)) {
-      setSkills([...skills, skill]);
-    }
-    setSkillInput('');
-    setFilteredSkills([]);
-  };
-
-  const removeSkill = (skill) => {
-    setSkills(skills.filter(s => s !== skill));
-  };
-
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-100'} flex flex-col transition-colors duration-200`}>
-      {/* Top Navigation Bar */}
-      <nav className={`${darkMode ? 'bg-gray-800' : 'bg-black'} text-white p-4`}>
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">Resume Portal</h1>
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200"
-          >
-            {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
-        </div>
-      </nav>
-
-      {/* Centered Content */}
+    <Container darkMode={darkMode}>
+      <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
       <div className="flex-grow flex items-center justify-center p-8">
-        <div className={`${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} rounded-lg shadow-xl p-8 w-full max-w-2xl transition-colors duration-200`}>
-          <h2 className="text-3xl font-semibold mb-8 text-center">Personal Information</h2>
-
-          <form className="space-y-6">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium mb-1">Full Name</label>
-              <input type="text" id="name" className={`w-full px-4 py-2 rounded-md border-2 ${darkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-200`} placeholder="Enter your full name" />
+        <div
+          className={`${
+            darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
+          } rounded-lg shadow-xl p-8 w-full max-w-2xl transition-colors duration-200`}
+        >
+          <h2 className="text-3xl font-semibold mb-8 text-center">
+            Personal Information
+          </h2>
+          <FormField
+            id="name"
+            label="Full Name"
+            placeholder="Enter your full name"
+            darkMode={darkMode}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <CitySelector
+            selectedCountry={selectedCountry}
+            setSelectedCountry={setSelectedCountry}
+            selectedProvince={selectedProvince}
+            setSelectedProvince={setSelectedProvince}
+            filteredCities={[]}
+            setCity={setCity}
+            darkMode={darkMode}
+          />
+          <div>
+            <label htmlFor="salary" className="block text-sm font-medium mb-1">
+              Expected Salary (PKR)
+            </label>
+            <input
+              type="range"
+              id="salary"
+              min="25000"
+              max="5000000"
+              step="5000"
+              value={salary}
+              onChange={(e) => setSalary(e.target.value)}
+              className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+            />
+            <div className="flex justify-between text-sm mt-1">
+              <span>25,000 PKR</span>
+              <span className="font-medium">
+                {Number(salary).toLocaleString()} PKR
+              </span>
+              <span>5,000,000 PKR</span>
             </div>
-            
-            <div>
-              <label htmlFor="city" className="block text-sm font-medium mb-1">City</label>
-              <div className="relative">
-                <input 
-                  type="text" 
-                  id="city" 
-                  value={city}
-                  onChange={handleCityChange}
-                  className={`w-full px-4 py-2 rounded-md border-2 ${darkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-200`}
-                  placeholder="Search for a city"
-                />
-                {filteredCities.length > 0 && (
-                  <ul className={`absolute z-10 w-full mt-1 rounded-md shadow-lg max-h-60 overflow-auto ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}>
-                    {filteredCities.map((city, index) => (
-                      <li 
-                        key={index}
-                        className={`px-4 py-2 cursor-pointer ${darkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-100'}`}
-                        onClick={() => {
-                          setCity(city);
-                          setFilteredCities([]);
-                        }}
-                      >
-                        {city}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+          </div>
+          <FormField
+            id="employer"
+            label="Current Employer"
+            placeholder="Enter your current employer"
+            darkMode={darkMode}
+          />
+          <FormField
+            id="position"
+            label="Current Position"
+            placeholder="e.g. Software Engineer, Backend Developer"
+            darkMode={darkMode}
+          />
+          <div>
+            <label className="block text-sm font-medium mb-2">Job Type</label>
+            <div className="flex space-x-4">
+              {["Full Time", "Part Time", "Contract"].map((type) => (
+                <label key={type} className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="jobType"
+                    value={type} // Correct enum value (Full Time, Part Time, Contract)
+                    onChange={(e) => setJobType(e.target.value)} // Updates the jobtype state
+                    checked={jobtype === type} // Mark radio button as selected
+                    className="form-radio text-blue-600"
+                  />
+                  <span className="ml-2">{type}</span>
+                </label>
+              ))}
             </div>
-
-            <div>
-              <label htmlFor="salary" className="block text-sm font-medium mb-1">Expected Salary (PKR)</label>
-              <input 
-                type="range" 
-                id="salary" 
-                min="25000" 
-                max="5000000" 
-                step="5000" 
-                value={salary}
-                onChange={handleSalaryChange}
-                className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
-              />
-              <div className="flex justify-between text-sm mt-1">
-                <span>25,000 PKR</span>
-                <span className="font-medium">{Number(salary).toLocaleString()} PKR</span>
-                <span>5,000,000 PKR</span>
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="employer" className="block text-sm font-medium mb-1">Current Employer</label>
-              <input type="text" id="employer" className={`w-full px-4 py-2 rounded-md border-2 ${darkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-200`} placeholder="Enter your current employer" />
-            </div>
-
-            <div>
-              <label htmlFor="position" className="block text-sm font-medium mb-1">Current Position</label>
-              <input type="text" id="position" className={`w-full px-4 py-2 rounded-md border-2 ${darkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-200`} placeholder="e.g. Software Engineer, Backend Developer" />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Job Type</label>
-              <div className="flex space-x-4">
-                {['Full Time', 'Part Time', 'Contract'].map((type) => (
-                  <label key={type} className="inline-flex items-center">
-                    <input type="radio" name="jobType" value={type} className="form-radio text-blue-600" />
-                    <span className="ml-2">{type}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="skills" className="block text-sm font-medium mb-1">Skills and Expertise</label>
-              <div className="relative">
-                <input 
-                  type="text" 
-                  id="skills" 
-                  value={skillInput}
-                  onChange={handleSkillInputChange}
-                  className={`w-full px-4 py-2 rounded-md border-2 ${darkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} focus:border-blue-500 focus:ring focus:ring-blue-200 transition duration-200`}
-                  placeholder="Add your skills"
-                />
-                {filteredSkills.length > 0 && (
-                  <ul className={`absolute z-10 w-full mt-1 rounded-md shadow-lg max-h-60 overflow-auto ${darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}>
-                    {filteredSkills.map((skill, index) => (
-                      <li 
-                        key={index}
-                        className={`px-4 py-2 cursor-pointer ${darkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-100'}`}
-                        onClick={() => addSkill(skill)}
-                      >
-                        {skill}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {skills.map((skill, index) => (
-                  <span key={index} className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${darkMode ? 'bg-blue-700 text-white' : 'bg-blue-100 text-blue-800'}`}>
-                    {skill}
-                    <button
-                      type="button"
-                      className="ml-1 inline-flex items-center justify-center h-4 w-4 rounded-full hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                      onClick={() => removeSkill(skill)}
-                    >
-                      <span className="sr-only">Remove {skill} skill</span>
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="resume" className="block text-sm font-medium mb-1">Upload Resume (PDF)</label>
-              <div className="mt-1 flex items-center">
-                <input
-                  type="file"
-                  id="resume"
-                  ref={fileInputRef}
-                  accept=".pdf"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current.click()}
-                  className={`inline-flex items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium ${darkMode ? 'border-gray-600 text-white hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
-                >
-                  <Upload className="mr-2 h-5 w-5 text-gray-400" />
-                  Upload PDF
-                </button>
-                {fileName && <span className="ml-3 text-sm">{fileName}</span>}
-              </div>
-            </div>
-
-            <div className="flex justify-between pt-6">
-              <button className={`px-6 py-2 border-2 rounded-md text-sm font-medium ${darkMode ? 'border-gray-600 text-white hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200`}>
+          </div>
+          <SkillInput
+            skillsList={skillsList}
+            skills={skills}
+            setSkills={setSkills}
+            skillInput={skillInput}
+            setSkillInput={setSkillInput}
+            darkMode={darkMode}
+          />
+          <TextField
+            id="aboutUs"
+            label="About Us"
+            value={aboutUsValue}
+            onChange={(e) => setAboutUsValue(e.target.value)}
+            placeholder="Write about yourself"
+            darkMode={false}
+            isTextarea={true}
+          />
+          <ResumeUpload
+            fileName={fileName}
+            fileInputRef={fileInputRef}
+            handleFileUpload={handleFileUpload}
+            darkMode={darkMode}
+          />
+          <div className="flex justify-between pt-6">
+            <Link href="/">
+              <Button
+                className={`${
+                  darkMode
+                    ? "border-gray-600 text-white hover:bg-gray-700"
+                    : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                }`}
+              >
                 Back
-              </button>
-              <button className="px-6 py-2 border-2 border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
-                Next
-              </button>
-            </div>
-          </form>
+              </Button>
+            </Link>
+            <Button
+              className="border-transparent bg-blue-600 text-white hover:bg-blue-700"
+              onClick={handleSubmit}
+            >
+              Submit
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 

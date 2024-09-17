@@ -1,12 +1,21 @@
 "use client";
-
+import axios from "axios";
 import React, { useState, useMemo } from "react";
-import { Search, MapPin, Bell, User, X, Upload } from "lucide-react";
 import Box from "@mui/material/Box";
-import Slider from "@mui/material/Slider";
-import Link from 'next/link';
+import FilterSidebar from "../app/components/FilterSidebar";
+import SearchBar from "../app/helpers/SearchBar";
+import CandidateCard from "../app/components/CandidateCard";
+import Link from "next/link";
+import { Search, MapPin, Bell, User, X, Upload } from "lucide-react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchInfo } from "../redux/InfoSlicer";
+import CountryData from "../data/CountryData.json";
+import CircularProgress from "@mui/material/CircularProgress";
+import Pagination from "@mui/material/Pagination";
 
 const JobiteDashboard = () => {
+  const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     experience: [],
@@ -15,29 +24,59 @@ const JobiteDashboard = () => {
     skills: [],
   });
   const [locationSearch, setLocationSearch] = useState("");
-  const [salaryRange, setSalaryRange] = useState([25000, 500000]);
+  const [salaryRange, setSalaryRange] = useState([0, 5000000]);
   const [value, setValue] = useState(30);
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const info = useSelector((state) => state.info.data);
+  const isLoading = useSelector((state) => state.info.isLoading); // Get loading state
+
+  const [selectedProvince, setSelectedProvince] = useState(""); // Added state for selected province
+  const [cities, setCities] = useState([]); // State for cities based on selected province
+  const [page, setPage] = useState(1); // Pagination page state
+  const [itemsPerPage] = useState(10);
+  useEffect(() => {
+    dispatch(fetchInfo());
+    console.log("ddddddd", dispatch);
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log("Infodtaaa", info);
+  }, [info]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const allLocations = [
-    "Karachi",
-    "Lahore",
-    "Islamabad",
-    "Rawalpindi",
-    "Faisalabad",
-    "Multan",
-    "Peshawar",
-    "Quetta",
-  ];
-  const filteredLocations = useMemo(
-    () =>
-      allLocations.filter((loc) =>
-        loc.toLowerCase().includes(locationSearch.toLowerCase())
-      ),
-    [locationSearch]
-  );
+  // const allLocations = [
+  //   "Karachi",
+  //   "Lahore",
+  //   "Islamabad",
+  //   "Rawalpindi",
+  //   "Faisalabad",
+  //   "Multan",
+  //   "Peshawar",
+  //   "Quetta",
+  // ];
+  // const filteredLocations = useMemo(
+  //   () =>
+  //     allLocations.filter((loc) =>
+  //       loc.toLowerCase().includes(locationSearch.toLowerCase())
+  //     ),
+  //   [locationSearch]
+  // );
+
+  useEffect(() => {
+    const provinceData = CountryData.Pakistan.Provinces.find(
+      (data) => data.name === selectedProvince
+    );
+    setCities(provinceData ? provinceData.cities : []);
+  }, [selectedProvince]);
+
+  const filteredLocations = useMemo(() => {
+    return CountryData.Pakistan.Provinces.map((data) => data.name).filter(
+      (loc) => loc.toLowerCase().includes(locationSearch.toLowerCase())
+    );
+  }, [locationSearch]);
 
   const availabilityOptions = ["Full Time", "Part Time", "Contract"];
 
@@ -83,7 +122,6 @@ const JobiteDashboard = () => {
         : [...prev[key], value],
     }));
   };
-
   const clearAllFilters = () => {
     setFilters({
       experience: [],
@@ -91,12 +129,17 @@ const JobiteDashboard = () => {
       employmentType: [],
       skills: [],
     });
-    setSalaryRange([25000, 500000]);
+    setSalaryRange([0, 5000000]);
     setLocationSearch("");
     setSearchTerm("");
+
+    // Log state to check if it updates correctly
+    console.log("Filters:", filters);
+    console.log("Salary Range:", salaryRange);
+    console.log("Location Search:", locationSearch);
+    console.log("Search Term:", searchTerm);
   };
 
-  // Mock data for demonstration purposes
   const allCandidates = [
     {
       id: 1,
@@ -136,27 +179,39 @@ const JobiteDashboard = () => {
   ];
 
   const filteredCandidates = useMemo(() => {
-    return allCandidates.filter((candidate) => {
+    if (!info || !Array.isArray(info)) return [];
+    
+    return info.filter((candidate) => {
       const matchesSearch =
-        candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        candidate.intro.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        candidate.skills.some((skill) =>
-          skill.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-
+        (candidate.fullName &&
+          candidate.fullName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())) ||
+        (candidate.aboutUs &&
+          candidate.aboutUs.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (candidate.skills &&
+          candidate.skills.some((skill) =>
+            skill.toLowerCase().includes(searchTerm.toLowerCase())
+          ));
+      
       const matchesLocation =
         filters.locations.length === 0 ||
         filters.locations.includes(candidate.city);
+      
       const matchesEmploymentType =
         filters.employmentType.length === 0 ||
-        filters.employmentType.includes(candidate.availability);
+        filters.employmentType.includes(candidate.jobType);
+      
       const matchesSkills =
         filters.skills.length === 0 ||
-        filters.skills.some((skill) => candidate.skills.includes(skill));
+        filters.skills.some(
+          (skill) => candidate.skills && candidate.skills.includes(skill)
+        );
+      
       const matchesSalary =
         candidate.expectedSalary >= salaryRange[0] &&
         candidate.expectedSalary <= salaryRange[1];
-
+      
       return (
         matchesSearch &&
         matchesLocation &&
@@ -165,7 +220,35 @@ const JobiteDashboard = () => {
         matchesSalary
       );
     });
-  }, [allCandidates, searchTerm, filters, salaryRange]);
+  }, [info, searchTerm, filters, salaryRange]);
+  
+
+  const totalPages = Math.ceil(filteredCandidates.length / itemsPerPage);
+  const paginatedCandidates = useMemo(() => {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return filteredCandidates.slice(start, end);
+  }, [page, filteredCandidates, itemsPerPage]);
+  
+  useEffect(() => {
+    setPage(1);
+  }, [filteredCandidates]);
+  useEffect(() => {
+    console.log("Page:", page);
+    console.log("Items Per Page:", itemsPerPage);
+    console.log("Total Pages:", totalPages);
+    console.log("Filtered Candidates Length:", filteredCandidates.length);
+  }, [page, itemsPerPage, totalPages, filteredCandidates]);
+  
+  
+  const handlePageChange = (event, newPage) => {
+    setPage(newPage);
+  };
+  
+
+  useEffect(() => {
+    console.log("Filtered Candidates:", filteredCandidates);
+  }, [filteredCandidates]);
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -195,171 +278,48 @@ const JobiteDashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
           {/* Left Sidebar - Filters */}
-          <div className="w-64 bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-semibold text-black">Filter</h2>
-              <button
-                className="text-sm text-blue-500"
-                onClick={clearAllFilters}
-              >
-                Clear all
-              </button>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 text-black">Location</label>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search locations..."
-                  value={locationSearch}
-                  onChange={(e) => setLocationSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border rounded-md"
-                />
-              </div>
-              <div className="mt-2 max-h-40 overflow-y-auto">
-                {filteredLocations.map((location) => (
-                  <div key={location} className="flex items-center mb-2">
-                    <input
-                      type="checkbox"
-                      id={location}
-                      checked={filters.locations.includes(location)}
-                      onChange={() => handleFilterToggle("locations", location)}
-                      className="mr-2 "
-                    />
-                    <label htmlFor={location} className="text-sm text-black">
-                      {location}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 text-black">
-                Availability
-              </label>
-              {availabilityOptions.map((type) => (
-                <div key={type} className="flex items-center mb-2">
-                  <input
-                    type="checkbox"
-                    id={type}
-                    checked={filters.employmentType.includes(type)}
-                    onChange={() => handleFilterToggle("employmentType", type)}
-                    className="mr-2"
-                  />
-                  <label htmlFor={type} className="text-sm text-black">
-                    {type}
-                  </label>
-                </div>
-              ))}
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 text-black">
-                Expected Salary (PKR)
-              </label>
-              <Slider
-                value={value}
-                onChange={handleChange}
-                aria-labelledby="continuous-slider"
-                min={0}
-                max={100}
-                step={10}
-                valueLabelDisplay="auto"
-              />
-              <div className="flex justify-between text-sm text-gray-500">
-                <span>{salaryRange[0].toLocaleString()} PKR</span>
-                <span>{salaryRange[1].toLocaleString()} PKR</span>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 text-black">Skills</label>
-              <div className="max-h-40 overflow-y-auto">
-                {skillOptions.map((skill) => (
-                  <div key={skill} className="flex items-center mb-2">
-                    <input
-                      type="checkbox"
-                      id={skill}
-                      checked={filters.skills.includes(skill)}
-                      onChange={() => handleFilterToggle("skills", skill)}
-                      className="mr-2"
-                    />
-                    <label htmlFor={skill} className="text-sm text-black">
-                      {skill}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <FilterSidebar
+            locationSearch={locationSearch}
+            setLocationSearch={setLocationSearch}
+            filteredLocations={filteredLocations}
+            filters={filters}
+            handleFilterToggle={handleFilterToggle}
+            availabilityOptions={availabilityOptions}
+            skillOptions={skillOptions}
+            salaryRange={salaryRange}
+            setSalaryRange={setSalaryRange}
+            clearAllFilters={clearAllFilters}
+            setSelectedProvince={setSelectedProvince}
+            cities={cities}
+          />
 
           {/* Main Content */}
           <div className="flex-1">
-            <div className="bg-white rounded-lg shadow mb-6">
-              <div className="p-4 flex">
-                <input
-                  type="text"
-                  placeholder="Search by Name, Skills or any keyword..."
-                  className="flex-1 p-2 border rounded-l-md"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-r-md">
-                  <Search className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
+            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
             {/* Candidate Cards */}
-            <div className="space-y-4">
-              {filteredCandidates.map((candidate) => (
-                <div
-                  key={candidate.id}
-                  className="bg-white rounded-lg shadow p-6"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-lg text-gray-900">{candidate.name}</h3>
-                    <button className="text-gray-400">
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    {candidate.expectedSalary.toLocaleString()} PKR per month
-                  </p>
-                  <p className="text-sm mb-4 text-black">{candidate.intro}</p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {candidate.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="bg-gray-100 text-black text-xs px-2 py-1 rounded"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {candidate.city}, Pakistan • {candidate.availability}
-                  </div>
-                </div>
-              ))}
-            </div>
+            {/* Show loading spinner while fetching data */}
+            {isLoading ? (
+              <Box className="flex justify-center items-center h-full">
+                <CircularProgress color="inherit" />
+              </Box>
+            ) : (
+              <div className="space-y-4">
+                {filteredCandidates.map((candidate) => (
+                  <CandidateCard key={candidate.id} candidate={candidate} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
+        <Box mt={4} display="flex" justifyContent="center">
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+          />
+        </Box>
       </main>
     </div>
   );

@@ -1,0 +1,154 @@
+{
+    "Pakistan": {
+      "Provinces": [
+        {
+          "name": "Punjab",
+          "cities": [
+            "Lahore",
+            "Faisalabad",
+            "Rawalpindi",
+            "Gujranwala",
+            "Sialkot",
+            "Multan",
+            "Bahawalpur",
+            "Sargodha",
+            "Sheikhupura",
+            "Dera Ghazi Khan",
+            "Sahiwal",
+            "Jhelum",
+            "Gujrat",
+            "Kasur",
+            "Mianwali",
+            "Okara",
+            "Rahim Yar Khan",
+            "Vehari",
+            "Khanewal",
+            "Muzaffargarh",
+            "Chiniot",
+            "Pakpattan",
+            "Attock",
+            "Bhakkar",
+            "Hafizabad",
+            "Layyah",
+            "Narowal",
+            "Jhang",
+            "Mandi Bahauddin",
+            "Lodhran",
+            "Khushab",
+            "Toba Tek Singh",
+            "Bahawalnagar"
+          ]
+        },
+        {
+          "name": "Sindh",
+          "cities": [
+            "Karachi",
+            "Hyderabad",
+            "Sukkur",
+            "Larkana",
+            "Mirpur Khas",
+            "Nawabshah",
+            "Jacobabad",
+            "Khairpur",
+            "Shikarpur",
+            "Dadu",
+            "Ghotki",
+            "Badin",
+            "Thatta",
+            "Tando Adam",
+            "Umerkot",
+            "Kandhkot",
+            "Jamshoro",
+            "Tando Allahyar",
+            "Sanghar",
+            "Matiari",
+            "Qambar Shahdadkot"
+          ]
+        },
+        {
+          "name": "Khyber Pakhtunkhwa",
+          "cities": [
+            "Peshawar",
+            "Mardan",
+            "Abbottabad",
+            "Swat",
+            "Dera Ismail Khan",
+            "Kohat",
+            "Bannu",
+            "Mansehra",
+            "Nowshera",
+            "Charsadda",
+            "Swabi",
+            "Haripur",
+            "Karak",
+            "Lower Dir",
+            "Upper Dir",
+            "Buner",
+            "Hangu",
+            "Lakki Marwat",
+            "Tank",
+            "Batkhela"
+          ]
+        },
+        {
+          "name": "Balochistan",
+          "cities": [
+            "Quetta",
+            "Gwadar",
+            "Turbat",
+            "Khuzdar",
+            "Sibi",
+            "Zhob",
+            "Pishin",
+            "Chaman",
+            "Dera Bugti",
+            "Kalat",
+            "Lasbela",
+            "Jafarabad",
+            "Kharan",
+            "Loralai",
+            "Awaran",
+            "Nushki",
+            "Panjgur",
+            "Mastung"
+          ]
+        },
+        {
+          "name": "Gilgit-Baltistan",
+          "cities": [
+            "Gilgit",
+            "Skardu",
+            "Hunza",
+            "Diamer",
+            "Ghanche",
+            "Astore",
+            "Ghizer",
+            "Shigar",
+            "Kharmang"
+          ]
+        },
+        {
+          "name": "Azad Jammu and Kashmir",
+          "cities": [
+            "Muzaffarabad",
+            "Mirpur",
+            "Kotli",
+            "Rawalakot",
+            "Bagh",
+            "Bhimber",
+            "Haveli",
+            "Neelum",
+            "Poonch",
+            "Sudhnuti"
+          ]
+        },
+        {
+          "name": "Islamabad Capital Territory",
+          "cities": [
+            "Islamabad"
+          ]
+        }
+      ]
+    }
+  }
+  
