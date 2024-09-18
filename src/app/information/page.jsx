@@ -96,7 +96,8 @@ const ResumePortal = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/info/createInfo",
+        // "http://localhost:8000/info/createInfo",
+        "https://jobite-backend-xc68.vercel.app/info/createInfo",
         payload
       );
       console.log("Response from server:", response.data);
