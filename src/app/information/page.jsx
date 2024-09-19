@@ -90,7 +90,7 @@ const ResumePortal = () => {
     formData.append('resume', fileInputRef.current.files[0]); // File upload
     try {
       const response = await axios.post(
-        "http://localhost:8000/info/createInfo",
+        "https://jobitebackend.vercel.app/info/createInfo",
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
