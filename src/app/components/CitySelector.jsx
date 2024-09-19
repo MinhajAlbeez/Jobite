@@ -29,9 +29,16 @@ const CitySelector = ({ selectedCountry, setSelectedCountry, selectedProvince, s
 
   const handleCityChange = (city) => {
     setCity(city);
-    setCitySearch('');
+    setCitySearch(city);
     setDropdownOpen({ country: false, province: false, city: false });
+    console.log('Dropdown state after city change:', dropdownOpen); // Debugging
   };
+  
+  useEffect(() => {
+    console.log('Updated dropdown state:', dropdownOpen);
+  }, [dropdownOpen]);
+  
+
 
   const filteredProvinces = useMemo(() => {
     if (!selectedCountry) return [];
