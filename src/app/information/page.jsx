@@ -97,7 +97,7 @@ const ResumePortal = () => {
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
       toast.success('Submission successful!');
-      // window.location.href = '/';
+      window.location.href = '/';
     } catch (error) {
       console.error("There was an error!", error);
       toast.error('Submission failed. Please try again.');
