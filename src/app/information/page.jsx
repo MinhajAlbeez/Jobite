@@ -91,7 +91,7 @@ const ResumePortal = () => {
     try {
       const response = await axios.post(
         // "http://localhost:8000/info/createInfo",
-        "https://jobitebackend.vercel.app/info/createInfo",
+        "https://jobite-server.vercel.app/info/createInfo",
 
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
