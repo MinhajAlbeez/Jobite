@@ -58,9 +58,8 @@ const ResumePortal = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [aboutUsValue, setAboutUsValue] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState(""); // Initialize state
-  const [selectedProvince, setSelectedProvince] = useState(""); 
-  const [resumeFile, setResumeFile] = useState(null); // State to hold the uploaded file
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedProvince, setSelectedProvince] = useState("");
 
   useEffect(() => {
     const savedMode = localStorage.getItem("darkMode");
@@ -80,38 +79,30 @@ const ResumePortal = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    let payload = {
-      fullName: name, // Match the schema field
-      city: city,
-      expectedSalary: Number(salary), // Match the schema field
-      jobType: jobtype,
-      skills: skills,
-      aboutUs: aboutUsValue,
-      resume: resumeFile, // This should contain the Base64 string
-    };
-
-    console.log("Resume File:", resumeFile); // Add this before sending the payload
-    console.log("Payload before sending:", payload); // Check the payload data
-
+  
+    const formData = new FormData();
+    formData.append('fullName', name);
+    formData.append('city', city);
+    formData.append('expectedSalary', Number(salary)); 
+    formData.append('jobType', jobtype);
+    skills.forEach(skill => formData.append('skills[]', skill)); 
+    formData.append('aboutUs', aboutUsValue);
+    formData.append('resume', fileInputRef.current.files[0]); // File upload
     try {
       const response = await axios.post(
-        // "http://localhost:8000/info/createInfo",
-        "https://jobite-backend-xc68.vercel.app/info/createInfo",
-        payload
+        "http://localhost:8000/info/createInfo",
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       );
-      console.log("Response from server:", response.data);
-      toast.success('Submission successful!'); // Show success toast
-
-      // Redirect after a 3-second delay
-      setTimeout(() => {
-        window.location.href = '/'; // Redirect to the desired page
-      }, 3000);
+      toast.success('Submission successful!');
+      window.location.href = '/';
     } catch (error) {
       console.error("There was an error!", error);
-      toast.error('Submission failed. Please try again.'); // Show error toast
+      toast.error('Submission failed. Please try again.');
     }
   };
+  
+  
 
   const handleCityChange = (e) => {
     const value = e.target.value;
@@ -122,24 +113,16 @@ const ResumePortal = () => {
       )
     );
   };
+
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file && file.type === "application/pdf") {
       setFileName(file.name);
-  
-      // Read the file as Base64
-      const reader = new FileReader();
-      reader.readAsDataURL(file); // Convert to Base64
-      reader.onloadend = () => {
-        setResumeFile(reader.result); // Store the Base64 string
-      };
     } else {
       alert("Please upload a PDF file.");
       e.target.value = "";
     }
   };
-  
-  
 
   const handleSalaryChange = (e) => {
     setSalary(e.target.value);
@@ -170,7 +153,7 @@ const ResumePortal = () => {
             setSelectedCountry={setSelectedCountry}
             selectedProvince={selectedProvince}
             setSelectedProvince={setSelectedProvince}
-            filteredCities={[]}
+            filteredCities={filteredCities}
             setCity={setCity}
             darkMode={darkMode}
           />
@@ -216,9 +199,9 @@ const ResumePortal = () => {
                   <input
                     type="radio"
                     name="jobType"
-                    value={type} // Correct enum value (Full Time, Part Time, Contract)
-                    onChange={(e) => setJobType(e.target.value)} // Updates the jobtype state
-                    checked={jobtype === type} // Mark radio button as selected
+                    value={type}
+                    onChange={(e) => setJobType(e.target.value)}
+                    checked={jobtype === type}
                     className="form-radio text-blue-600"
                   />
                   <span className="ml-2">{type}</span>

@@ -132,12 +132,6 @@ const JobiteDashboard = () => {
     setSalaryRange([0, 5000000]);
     setLocationSearch("");
     setSearchTerm("");
-
-    // Log state to check if it updates correctly
-    console.log("Filters:", filters);
-    console.log("Salary Range:", salaryRange);
-    console.log("Location Search:", locationSearch);
-    console.log("Search Term:", searchTerm);
   };
 
   const allCandidates = [
