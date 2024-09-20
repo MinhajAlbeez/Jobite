@@ -10,7 +10,7 @@ import Button from "../helpers/Button";
 import CitySelector from "../components/CitySelector";
 import Link from "next/link";
 import TextField from "../helpers/TextField";
-import { toast } from 'react-toastify'; // Import toast
+import { toast } from "react-toastify"; // Import toast
 
 const pakistaniCities = [
   "Karachi",
@@ -79,32 +79,32 @@ const ResumePortal = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const formData = new FormData();
-    formData.append('fullName', name);
-    formData.append('city', city);
-    formData.append('expectedSalary', Number(salary)); 
-    formData.append('jobType', jobtype);
-    skills.forEach(skill => formData.append('skills[]', skill)); 
-    formData.append('aboutUs', aboutUsValue);
-    formData.append('resume', fileInputRef.current.files[0]); // File upload
+    formData.append("fullName", name);
+    formData.append("city", city);
+    formData.append("expectedSalary", Number(salary));
+    formData.append("jobType", jobtype);
+    skills.forEach((skill) => formData.append("skills[]", skill));
+    formData.append("aboutUs", aboutUsValue);
+    formData.append("resume", fileInputRef.current.files[0]); // File upload
     try {
       const response = await axios.post(
         // "http://localhost:8000/info/createInfo",
         "https://jobite-server.vercel.app/info/createInfo",
 
         formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
-      toast.success('Submission successful!');
-      window.location.href = '/';
+      toast.success("Submission successful!");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 3000);
     } catch (error) {
       console.error("There was an error!", error);
-      toast.error('Submission failed. Please try again.');
+      toast.error("Submission failed. Please try again.");
     }
   };
-  
-  
 
   const handleCityChange = (e) => {
     const value = e.target.value;
