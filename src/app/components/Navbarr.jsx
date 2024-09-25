@@ -7,8 +7,7 @@ import Link from 'next/link'; // Import Link
 const Navbar = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Determine the current pathname
-  const currentPath = window.location.pathname; // Alternatively, use useRouter if in a functional component
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
   const isHomePage = currentPath === '/';
   const isJobBoardPage = currentPath === '/jobBoard';
   const buttonText = isHomePage ? 'Upload your Resume' : 'Post a Job';
