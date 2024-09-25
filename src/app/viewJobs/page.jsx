@@ -1,13 +1,12 @@
 import React from "react";
 
-const Page = () => {
+const ViewJobs = () => {
   return (
     <div className="bg-white min-h-screen">
       <main className="container mx-auto px-4 py-8">
         <div className="flex">
           <div className="w-2/3 bg-white p-8 rounded-lg shadow-lg mr-4">
             {" "}
-            {/* Changed from w-3/4 to w-2/3 */}
             <h2 className="text-2xl font-bold mb-4">
               Need Senior MERN Stack Developer
             </h2>
@@ -28,7 +27,6 @@ const Page = () => {
               Are you passionate about creating engaging and creative content...
               Are you passionate about creating engaging and creative content...
               Are you passionate about creating engaging and creative content...
-              {/* Content truncated for brevity */}
             </p>
             <h4 className="text-lg font-bold mb-2 mt-4">Requirements</h4>
             <ul className="list-disc list-inside">
@@ -75,4 +73,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default ViewJobs;
