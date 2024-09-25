@@ -1,8 +1,9 @@
+import Link from 'next/link';
 import React from 'react';
 
 const CandidateCard = ({ candidate }) => {
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-white rounded-lg shadow p-6 relative">
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-semibold text-lg text-gray-900">{candidate.fullName}</h3>
         <button className="text-gray-400">
@@ -37,6 +38,9 @@ const CandidateCard = ({ candidate }) => {
       </div>
       <div className="text-sm text-gray-500">
         {candidate.city}, Pakistan • {candidate.jobType}
+      </div>
+      <div className="absolute bottom-4 right-4 text-black cursor-pointer">
+        View
       </div>
     </div>
   );

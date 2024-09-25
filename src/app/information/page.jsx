@@ -2,7 +2,6 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import Container from "../components/Container";
-import Navbar from "../components/Navbar";
 import FormField from "../helpers/FormField";
 import SkillInput from "../helpers/SkillInput";
 import ResumeUpload from "../components/ResumeUpload";
@@ -132,7 +131,6 @@ const ResumePortal = () => {
 
   return (
     <Container darkMode={darkMode}>
-      <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
       <div className="flex-grow flex items-center justify-center p-8">
         <div
           className={`${
