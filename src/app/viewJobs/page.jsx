@@ -18,7 +18,6 @@ const ViewJobs = () => {
       <main className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-2/3 bg-gray-100 rounded-xl shadow-lg overflow-hidden">
-            {/* Header Section */}
             <div className="bg-black p-6 text-white">
               <h2 className="text-3xl font-bold mb-2">
                 Senior MERN Stack Developer
@@ -39,30 +38,7 @@ const ViewJobs = () => {
                 </a>
               </div>
             </div>
-
-            {/* Quick Info Section */}
-            {/* <div className="bg-white p-6 flex flex-wrap gap-4 text-sm text-gray-700 border-b border-gray-200">
-              <div className="flex items-center">
-                <MapPin className="w-4 h-4 mr-2 text-black" />
-                Seattle, WA (Hybrid)
-              </div>
-              <div className="flex items-center">
-                <Clock className="w-4 h-4 mr-2 text-black" />
-                Full Time
-              </div>
-              <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-2 text-black" />
-                Posted: Apr 04, 2023
-              </div>
-              <div className="flex items-center">
-                <DollarSign className="w-4 h-4 mr-2 text-black" />
-                $120k - $160k / year
-              </div>
-            </div> */}
-
-            {/* Main Content */}
             <div className="p-6 space-y-8 bg-gray-100">
-              {/* Job Description */}
               <section>
                 <h4 className="text-xl font-semibold mb-4 text-black flex items-center">
                   <Code className="w-6 h-6 mr-2 text-gray-700" />
@@ -78,8 +54,6 @@ const ViewJobs = () => {
                   innovation in our tech stack.
                 </p>
               </section>
-
-              {/* Key Responsibilities */}
               <section>
                 <h4 className="text-xl font-semibold mb-4 text-black flex items-center">
                   <CheckCircle className="w-6 h-6 mr-2 text-gray-700" />
@@ -102,7 +76,6 @@ const ViewJobs = () => {
                 </ul>
               </section>
 
-              {/* Requirements */}
               <section>
                 <h4 className="text-xl font-semibold mb-4 text-black flex items-center">
                   <Users className="w-6 h-6 mr-2 text-gray-700" />
@@ -128,13 +101,11 @@ const ViewJobs = () => {
             </div>
           </div>
 
-          {/* Application Card */}
           <div className="lg:w-1/3">
             <div className="bg-gray-100 p-6 rounded-xl shadow-lg sticky top-8">
               <h4 className="text-xl font-semibold mb-6 text-black">
                 Job Details
               </h4>
-
               <div className="space-y-4 mb-8">
                 <div className="flex items-center text-gray-700">
                   <Calendar className="w-5 h-5 mr-3 text-black" />
@@ -168,8 +139,8 @@ const ViewJobs = () => {
               </button>
 
               <p className="text-center text-sm text-gray-500 mt-4">
-                By clicking "Apply", you agree to our terms of service and
-                privacy policy.
+                By clicking &quot;Apply&quot;, you agree to our terms of service
+                and privacy policy.
               </p>
             </div>
           </div>
