@@ -242,25 +242,7 @@ const JobBoard = () => {
         </div>
       </main>
 
-      <footer className="bg-black text-white py-8">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold mb-4">Subscribe Newsletter</h2>
-          <p className="mb-4">
-            Sign up to our newsletter to get $10 off your first order, as well
-            as news of our latest offers and product releases.
-          </p>
-          <div className="flex">
-            <input
-              type="email"
-              placeholder="Email"
-              className="flex-grow mr-2 text-white bg-gray-800 border-none py-2 px-4 rounded"
-            />
-            <button className="bg-blue-700 text-white px-6 py-2 rounded">
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 };

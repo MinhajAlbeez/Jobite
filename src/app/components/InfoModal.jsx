@@ -1,15 +1,13 @@
-"use client";
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { Button, Modal } from "antd";
 import axios from "axios";
-import Container from "../components/Container";
 import FormField from "../helpers/FormField";
 import SkillInput from "../helpers/SkillInput";
 import ResumeUpload from "../components/ResumeUpload";
-import Button from "../helpers/Button";
 import CitySelector from "../components/CitySelector";
-import Link from "next/link";
 import TextField from "../helpers/TextField";
 import { toast } from "react-toastify"; // Import toast
+import Grid from '@mui/material/Grid'; // Import MUI Grid
 
 const pakistaniCities = [
   "Karachi",
@@ -42,7 +40,7 @@ const skillsList = [
   "Cybersecurity",
 ];
 
-const ResumePortal = () => {
+const InfoModal = ({ isVisible, onClose }) => {
   const [city, setCity] = useState("");
   const [name, setName] = useState("");
   const [jobtype, setJobType] = useState("");
@@ -53,9 +51,6 @@ const ResumePortal = () => {
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState("");
   const fileInputRef = useRef(null);
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [aboutUsValue, setAboutUsValue] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
@@ -87,11 +82,10 @@ const ResumePortal = () => {
     skills.forEach((skill) => formData.append("skills[]", skill));
     formData.append("aboutUs", aboutUsValue);
     formData.append("resume", fileInputRef.current.files[0]); // File upload
+
     try {
       const response = await axios.post(
-        "http://localhost:8000/info/createInfo",
-        // "https://jobite-server.vercel.app/info/createInfo",
-
+        "https://jobite-server.vercel.app/info/createInfo",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -130,34 +124,43 @@ const ResumePortal = () => {
   };
 
   return (
-    <Container darkMode={darkMode}>
-      <div className="flex-grow flex items-center justify-center p-8">
-        <div
-          className={`${
-            darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
-          } rounded-lg shadow-xl p-8 w-full max-w-2xl transition-colors duration-200`}
-        >
-          <h2 className="text-3xl font-semibold mb-8 text-center">
-            Personal Information
-          </h2>
-          <FormField
-            id="name"
-            label="Full Name"
-            placeholder="Enter your full name"
-            darkMode={darkMode}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <CitySelector
-            selectedCountry={selectedCountry}
-            setSelectedCountry={setSelectedCountry}
-            selectedProvince={selectedProvince}
-            setSelectedProvince={setSelectedProvince}
-            filteredCities={filteredCities}
-            setCity={setCity}
-            darkMode={darkMode}
-          />
-          <div>
+    <Modal
+      title="Resume Submission"
+      open={isVisible}
+      onOk={onClose}
+      onCancel={onClose}
+      footer={null}
+      width={800} // Set modal width
+      bodyStyle={{ overflowY: "auto", maxHeight: "70vh", paddingRight: '20px' }} // Make it scrollable
+      >
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          {" "}
+          <Grid item xs={12}>
+            {" "}
+            <FormField
+              id="name"
+              label="Full Name"
+              placeholder="Enter your full name"
+              darkMode={darkMode}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <CitySelector
+              selectedCountry={selectedCountry}
+              setSelectedCountry={setSelectedCountry}
+              selectedProvince={selectedProvince}
+              setSelectedProvince={setSelectedProvince}
+              filteredCities={filteredCities}
+              setCity={setCity}
+              darkMode={darkMode}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            {" "}
+            {/* Salary Range Input */}
             <label htmlFor="salary" className="block text-sm font-medium mb-1">
               Expected Salary (PKR)
             </label>
@@ -168,7 +171,7 @@ const ResumePortal = () => {
               max="5000000"
               step="5000"
               value={salary}
-              onChange={(e) => setSalary(e.target.value)}
+              onChange={handleSalaryChange}
               className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
             />
             <div className="flex justify-between text-sm mt-1">
@@ -178,20 +181,30 @@ const ResumePortal = () => {
               </span>
               <span>5,000,000 PKR</span>
             </div>
-          </div>
-          <FormField
-            id="employer"
-            label="Current Employer"
-            placeholder="Enter your current employer"
-            darkMode={darkMode}
-          />
-          <FormField
-            id="position"
-            label="Current Position"
-            placeholder="e.g. Software Engineer, Backend Developer"
-            darkMode={darkMode}
-          />
-          <div>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            {" "}
+            {/* Half width for Current Employer */}
+            <FormField
+              id="employer"
+              label="Current Employer"
+              placeholder="Enter your current employer"
+              darkMode={darkMode}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            {" "}
+            {/* Half width for Current Position */}
+            <FormField
+              id="position"
+              label="Current Position"
+              placeholder="e.g. Software Engineer, Backend Developer"
+              darkMode={darkMode}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            {" "}
+            {/* Job Type Radio Buttons */}
             <label className="block text-sm font-medium mb-2">Job Type</label>
             <div className="flex space-x-4">
               {["Full Time", "Part Time", "Contract"].map((type) => (
@@ -208,53 +221,63 @@ const ResumePortal = () => {
                 </label>
               ))}
             </div>
-          </div>
-          <SkillInput
-            skillsList={skillsList}
-            skills={skills}
-            setSkills={setSkills}
-            skillInput={skillInput}
-            setSkillInput={setSkillInput}
-            darkMode={darkMode}
-          />
-          <TextField
-            id="aboutUs"
-            label="About Us"
-            value={aboutUsValue}
-            onChange={(e) => setAboutUsValue(e.target.value)}
-            placeholder="Write about yourself"
-            darkMode={false}
-            isTextarea={true}
-          />
-          <ResumeUpload
-            fileName={fileName}
-            fileInputRef={fileInputRef}
-            handleFileUpload={handleFileUpload}
-            darkMode={darkMode}
-          />
-          <div className="flex justify-between pt-6">
-            <Link href="/">
-              <Button
-                className={`${
-                  darkMode
-                    ? "border-gray-600 text-white hover:bg-gray-700"
-                    : "border-gray-300 text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                Back
-              </Button>
-            </Link>
+          </Grid>
+          <Grid item xs={12}>
+            {" "}
+            {/* Skills Input */}
+            <SkillInput
+              skillsList={skillsList}
+              skills={skills}
+              setSkills={setSkills}
+              skillInput={skillInput}
+              setSkillInput={setSkillInput}
+              darkMode={darkMode}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            {" "}
+            {/* About Us TextArea */}
+            <TextField
+              id="aboutUs"
+              label="About Us"
+              value={aboutUsValue}
+              onChange={(e) => setAboutUsValue(e.target.value)}
+              placeholder="Write about yourself"
+              darkMode={darkMode}
+              isTextarea={true}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            {" "}
+            {/* Resume Upload */}
+            <ResumeUpload
+              fileName={fileName}
+              fileInputRef={fileInputRef}
+              handleFileUpload={handleFileUpload}
+              darkMode={darkMode}
+            />
+          </Grid>
+          <Grid item xs={12} className="flex justify-between pt-6">
+            {" "}
+            {/* Buttons */}
             <Button
-              className="border-transparent bg-blue-600 text-white hover:bg-blue-700"
-              onClick={handleSubmit}
+              onClick={onClose}
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              Back
+            </Button>
+            <Button
+              type="primary"
+              className="bg-blue-600 text-white hover:bg-blue-700"
+              htmlType="submit"
             >
               Submit
             </Button>
-          </div>
-        </div>
-      </div>
-    </Container>
+          </Grid>
+        </Grid>
+      </form>
+    </Modal>
   );
 };
 
-export default ResumePortal;
+export default InfoModal;

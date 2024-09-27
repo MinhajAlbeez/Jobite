@@ -15,6 +15,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Pagination from "@mui/material/Pagination";
 import DashboardNav from "./components/DashboardNav ";
 
+
 const JobiteDashboard = () => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,9 +32,9 @@ const JobiteDashboard = () => {
   const [error, setError] = useState(null);
   const info = useSelector((state) => state.info.data);
   const isLoading = useSelector((state) => state.info.isLoading); // Get loading state
-
   const [selectedProvince, setSelectedProvince] = useState(""); // Added state for selected province
   const [cities, setCities] = useState([]); // State for cities based on selected province
+
 
   useEffect(() => {
     dispatch(fetchInfo());
@@ -187,7 +188,6 @@ const JobiteDashboard = () => {
 
   return (
     <div className="bg-white min-h-screen">
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
           <FilterSidebar
