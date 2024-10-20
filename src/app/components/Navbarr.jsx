@@ -4,25 +4,40 @@ import { Search } from "lucide-react";
 import Link from "next/link";
 import InfoModal from "./InfoModal";
 import JobPostModal from "./JobPostModal";
-
+import { LogOut } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify"; // Importing toast and ToastContainer
+import "react-toastify/dist/ReactToastify.css";
+import { logout } from "../../redux/authSlice"; // Adjust the import based on your file structure
+import { useDispatch, useSelector } from "react-redux";
 const Navbar = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPath, setCurrentPath] = useState(""); // Track current path
   const [isInfoModalVisible, setInfoModalVisible] = useState(false); // State for InfoModal
   const [isJobPostModalVisible, setJobPostModalVisible] = useState(false);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const userRole = useSelector((state) => state?.auth?.userRole);
+  const dispatch = useDispatch();
   useEffect(() => {
     if (typeof window !== "undefined") {
       setCurrentPath(window.location.pathname);
     }
   }, []);
-
+  // const userRole = useSelector((state) => state?.auth?.userRole);
   const isHomePage = currentPath === "/";
-  const buttonText = isHomePage ? "Upload your Resume" : "Post a Job";
+  let buttonText = null;
+
+  if (isHomePage && userRole !== "seeker") {
+    buttonText = "Post a Job"; // Show "Post a Job" only if not a seeker
+  } else if (!isHomePage && userRole !== "recruiter") {
+    buttonText = "Upload your Resume"; // Show "Upload your Resume" if not a recruiter
+  }
+
+
   const showModal = () => {
     if (isHomePage) {
-      setIsInfoModalOpen(true); // Open InfoModal on Home page
-    } else {
       setIsJobPostModalOpen(true);
+    } else {
+      setIsInfoModalOpen(true);
     }
   };
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
@@ -33,31 +48,69 @@ const Navbar = () => {
     setIsJobPostModalOpen(false);
   };
 
+  // const handleLogout = () => {
+  //   console.log("Logout button clicked");
+  //   toast.success("Logged in successfully!");
+  //   setTimeout(() => {
+  //     window.location.href = "/user-auth";
+  //   }, 2000);
+  // };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/api/users/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refreshToken: localStorage.getItem("refreshToken"),
+        }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        // toast.error(errorData.message || "Logout failed. Please try again.");
+        return;
+      }
+      dispatch(logout());
+      toast.success("Logged out successfully!");
+      setTimeout(() => {
+        window.location.href = "/user-auth"; // Redirect to login page
+      }, 2000);
+    } catch (error) {
+      toast.error("An error occurred during logout. Please try again.");
+    }
+  };
+
   return (
     <>
       <InfoModal isVisible={isInfoModalOpen} onClose={handleClose} />
       <JobPostModal isVisible={isJobPosrModalOpen} onClose={handleClose} />
       <header className="bg-black text-white py-6">
         <div className="container mx-auto px-4">
-          <nav className="flex justify-between items-center mb-12">
-            <div className="text-2xl font-bold">Jobite</div>
+          <nav className="flex justify-between items-center mb-12 p-4 ">
+            <div className="text-2xl font-bold text-white">Jobite</div>
             <div className="flex items-center space-x-4 ml-auto">
-              <Link
+              {/* <Link
                 href="/"
                 className="text-white hover:bg-white hover:text-black transition px-2 py-1"
                 style={{ borderBottom: "1px solid white" }}
               >
                 Home
-              </Link>
+              </Link> */}
+              {isAuthenticated &&
+                (userRole === "recruiter" || userRole === "superadmin") && (
+                  <Link
+                    href="/dashboard"
+                    className="text-white hover:bg-white hover:text-black transition px-2 py-1"
+                    style={{ borderBottom: "1px solid white" }}
+                  >
+                    Dashboard
+                  </Link>
+                )}
+
               <Link
-                href="/about"
-                className="text-white hover:bg-white hover:text-black transition px-2 py-1"
-                style={{ borderBottom: "1px solid white" }}
-              >
-                About
-              </Link>
-              <Link
-                href="/find-job"
+                href="/"
                 className="text-white hover:bg-white hover:text-black transition px-2 py-1"
                 style={{ borderBottom: "1px solid white" }}
               >
@@ -70,17 +123,26 @@ const Navbar = () => {
               >
                 Subscribe
               </Link>
+              {buttonText && (
+                <button
+                  onClick={showModal}
+                  className="bg-transparent border border-white text-white px-4 py-2 rounded hover:bg-white hover:text-black transition"
+                >
+                  {buttonText}
+                </button>
+              )}
+              {/* Logout Button */}
               <button
-                onClick={showModal}
-                className="bg-transparent border border-white text-white px-4 py-2 rounded hover:bg-white hover:text-black transition"
+                onClick={handleLogout} // This should be correctly set
+                className="flex items-center bg-transparent border border-white text-white px-4 py-2 rounded hover:bg-white hover:text-black transition"
               >
-                {buttonText}
+                <LogOut className="w-5 h-5 mr-2" /> {/* Adjust icon size */}
+                Logout
               </button>
             </div>
           </nav>
-
           <div className="text-center mb-8">
-            <div className="flex justify-center mb-8 space-x-4">
+            {/* <div className="flex justify-center mb-8 space-x-4">
               <div className="flex items-center space-x-2">
                 <div className="relative w-full max-w-md bg-gray-900 rounded-md overflow-hidden">
                   <input
@@ -106,7 +168,7 @@ const Navbar = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
           {/* <InfoModal
           isVisible={isInfoModalVisible}

@@ -45,7 +45,8 @@ const FilterSidebar = ({
               <input
                 type="checkbox"
                 id={location}
-                checked={filters.locations.includes(location)}
+                // checked={filters.locations.includes(location)}
+                checked={(filters.locations || []).includes(location)}
                 onChange={() => {
                   handleFilterToggle("locations", location);
                   setSelectedProvince(location);

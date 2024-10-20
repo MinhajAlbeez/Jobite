@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; 
 import Navbar from './components/Navbarr'; 
 import Footer from './components/Footer';
+import { usePathname } from 'next/navigation'; // Import usePathname
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -20,13 +21,17 @@ const geistMono = localFont({
 });
 
 export default function RootLayout({ children }) {
+  const pathname = usePathname(); // Get current route
+
+  const noLayoutRoutes = ['/user-auth']; 
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Provider store={store}>
-          <Navbar /> 
+          {!noLayoutRoutes.includes(pathname) && <Navbar />} 
           <main>{children}</main>
-          <Footer /> 
+          {!noLayoutRoutes.includes(pathname) && <Footer />} 
           <ToastContainer /> 
         </Provider>
       </body>

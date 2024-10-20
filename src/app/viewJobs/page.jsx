@@ -1,153 +1,135 @@
-import React from "react";
-import {
-  Calendar,
-  Clock,
-  Briefcase,
-  DollarSign,
-  MapPin,
-  Building,
-  Users,
-  Code,
-  CheckCircle,
-  Globe,
-} from "lucide-react";
+"use client";
+import React, { useEffect, useState } from "react";
+import { Search } from "lucide-react";
+import Link from "next/link";
+import { Card, CardContent } from "@mui/material";
+import { Tooltip } from "antd";
+import { EyeIcon } from "lucide-react";
+import { fetchJobPost } from "../../redux/JobPostSlice";
+import { useSelector, useDispatch } from "react-redux";
+// import FilterSidebar from "./FilterSidebar";
+import JobsFitered from "../components/JobsFitered"; // Ensure correct filename
 
-const ViewJobs = () => {
+// Sample locations array - you can modify this based on your needs
+const LOCATIONS = [
+  "New York",
+  "San Francisco",
+  "Chicago",
+  "Miami",
+  "Austin",
+  "Seattle",
+  "Boston",
+  "Los Angeles",
+  "Denver",
+  "Portland",
+];
+
+const JobBoard = () => {
+  const dispatch = useDispatch();
+  const jobPosts = useSelector((state) => state.jobPost.data?.jobPosts);
+
+  // Filter States
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedJobTypes, setSelectedJobTypes] = useState([]);
+  const [salaryRange, setSalaryRange] = useState([0, 150000]);
+  const [selectedLocation, setSelectedLocation] = useState("");
+
+  const jobTypes = ["Full Time", "Part Time", "Remote", "Internship"];
+  const formatCurrency = (amount) => {
+    if (!amount || isNaN(amount)) return "₨0"; // Handle invalid or missing numbers
+    return amount.toLocaleString('en-PK', { style: 'currency', currency: 'PKR' }).replace("PKR", "₨");
+  };
+  
+
+  useEffect(() => {
+    dispatch(fetchJobPost());
+  }, [dispatch]);
+
+  const handleJobTypeChange = (type) => {
+    setSelectedJobTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
+  // Filter jobs based on selected filters
+  const filteredJobs = jobPosts?.filter((job) => {
+    const matchesJobType =
+      selectedJobTypes.length === 0 || selectedJobTypes.includes(job.jobType);
+    const matchesSalary =
+      job.salaryRange.min >= salaryRange[0] &&
+      job.salaryRange.max <= salaryRange[1];
+    const matchesLocation =
+      !selectedLocation ||
+      job.location.toLowerCase().includes(selectedLocation.toLowerCase());
+
+    return matchesJobType && matchesSalary && matchesLocation;
+  });
+
   return (
-    <div className="bg-white min-h-screen py-12">
-      <main className="container mx-auto px-4">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="lg:w-2/3 bg-gray-100 rounded-xl shadow-lg overflow-hidden">
-            <div className="bg-black p-6 text-white">
-              <h2 className="text-3xl font-bold mb-2">
-                Senior MERN Stack Developer
-              </h2>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <Building className="w-5 h-5 mr-2" />
-                  <h3 className="text-xl">Microsoft</h3>
-                </div>
-                <a
-                  href="https://www.microsoft.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center text-gray-300 hover:text-white transition-colors"
-                >
-                  <Globe className="w-4 h-4 mr-1" />
-                  <span className="text-sm">Company Website</span>
-                </a>
-              </div>
+    <div className="bg-white min-h-screen">
+      <main className="container mx-auto px-4 py-8">
+        <div className="flex gap-8">
+          <aside className="w-1/4">
+            <JobsFitered
+              jobTypes={jobTypes}
+              selectedJobTypes={selectedJobTypes}
+              onJobTypeChange={handleJobTypeChange}
+              salaryRange={salaryRange}
+              onSalaryRangeChange={(_, newValue) => setSalaryRange(newValue)}
+              locations={LOCATIONS}
+              selectedLocation={selectedLocation}
+              onLocationChange={setSelectedLocation}
+            />
+          </aside>
+
+          <section className="w-3/4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-semibold text-black">Latest Jobs</h3>
+              <span className="text-gray-500">
+                {filteredJobs ? filteredJobs.length : 0} Result Found
+              </span>
             </div>
-            <div className="p-6 space-y-8 bg-gray-100">
-              <section>
-                <h4 className="text-xl font-semibold mb-4 text-black flex items-center">
-                  <Code className="w-6 h-6 mr-2 text-gray-700" />
-                  Job Description
-                </h4>
-                <p className="text-gray-700 leading-relaxed">
-                  We are seeking a talented and experienced Senior MERN Stack
-                  Developer to join our dynamic team. In this role, you will be
-                  responsible for developing and maintaining high-performance
-                  web applications using MongoDB, Express.js, React, and
-                  Node.js. You will work closely with our product and design
-                  teams to deliver exceptional user experiences and drive
-                  innovation in our tech stack.
-                </p>
-              </section>
-              <section>
-                <h4 className="text-xl font-semibold mb-4 text-black flex items-center">
-                  <CheckCircle className="w-6 h-6 mr-2 text-gray-700" />
-                  Key Responsibilities
-                </h4>
-                <ul className="space-y-2 text-gray-700">
-                  {[
-                    "Design and implement scalable backend services using Node.js and Express",
-                    "Develop responsive and interactive front-end interfaces using React",
-                    "Work with MongoDB to design efficient database schemas and queries",
-                    "Collaborate with cross-functional teams to define and implement new features",
-                    "Optimize application performance and ensure high-quality code standards",
-                    "Mentor junior developers and contribute to the team's technical growth",
-                  ].map((item, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-black mr-2">•</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              <section>
-                <h4 className="text-xl font-semibold mb-4 text-black flex items-center">
-                  <Users className="w-6 h-6 mr-2 text-gray-700" />
-                  Requirements
-                </h4>
-                <ul className="space-y-2 text-gray-700">
-                  {[
-                    "5+ years of experience with the MERN stack (MongoDB, Express, React, Node.js)",
-                    "Strong understanding of JavaScript, including ES6+ features",
-                    "Experience with state management libraries (e.g., Redux, MobX)",
-                    "Familiarity with RESTful API design and implementation",
-                    "Knowledge of version control systems (Git) and CI/CD pipelines",
-                    "Excellent problem-solving and communication skills",
-                    "Bachelor's degree in Computer Science or related field (or equivalent experience)",
-                  ].map((item, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-black mr-2">•</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            </div>
-          </div>
-
-          <div className="lg:w-1/3">
-            <div className="bg-gray-100 p-6 rounded-xl shadow-lg sticky top-8">
-              <h4 className="text-xl font-semibold mb-6 text-black">
-                Job Details
-              </h4>
-              <div className="space-y-4 mb-8">
-                <div className="flex items-center text-gray-700">
-                  <Calendar className="w-5 h-5 mr-3 text-black" />
-                  <span className="font-medium">Posted:</span>
-                  <span className="ml-2">Apr 04, 2023</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <Clock className="w-5 h-5 mr-3 text-black" />
-                  <span className="font-medium">Job Type:</span>
-                  <span className="ml-2">Full Time</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <Briefcase className="w-5 h-5 mr-3 text-black" />
-                  <span className="font-medium">Role:</span>
-                  <span className="ml-2">Senior Developer</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <DollarSign className="w-5 h-5 mr-3 text-black" />
-                  <span className="font-medium">Salary:</span>
-                  <span className="ml-2">$120k - $160k / year</span>
-                </div>
-                <div className="flex items-center text-gray-700">
-                  <MapPin className="w-5 h-5 mr-3 text-black" />
-                  <span className="font-medium">Location:</span>
-                  <span className="ml-2">Seattle, WA (Hybrid)</span>
-                </div>
-              </div>
-
-              <button className="bg-black text-white w-full py-3 rounded-lg hover:bg-gray-800 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
-                Apply for this position
-              </button>
-
-              <p className="text-center text-sm text-gray-500 mt-4">
-                By clicking &quot;Apply&quot;, you agree to our terms of service
-                and privacy policy.
-              </p>
-            </div>
-          </div>
+            {filteredJobs && filteredJobs.length > 0 ? (
+              filteredJobs.map((job) => (
+                <Card key={job._id} className="mb-4 shadow-sm">
+                  <CardContent className="flex items-center justify-between p-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-500 font-bold">
+                        {job.companyName[0]}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg mb-1">
+                          {job.jobTitle}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {job.companyName} • {job.jobType} • 
+                          {/* {job.salaryRange.min} - ${job.salaryRange.max} •{" "} */}
+                          {formatCurrency(job?.salaryRange?.min)} - {formatCurrency(job?.salaryRange?.max)} •{" "}
+                          {new Date(job.postedAt).toLocaleDateString()} <br />
+                          <span className="font-semibold">{job.location}</span>
+                        </p>
+                      </div>
+                    </div>
+                    <Tooltip title="View Job Details">
+                      <Link href={`/viewJobs/${job._id}`} passHref>
+                        <button className="px-6 flex items-center space-x-2">
+                          <EyeIcon className="w-4 h-4 text-blue-700" />
+                          <span className="text-blue-500">View Job</span>
+                        </button>
+                      </Link>
+                    </Tooltip>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <p>No job listings available.</p>
+            )}
+            <button className="w-full mt-4">See All Jobs</button>
+          </section>
         </div>
       </main>
     </div>
   );
 };
 
-export default ViewJobs;
+export default JobBoard;
