@@ -126,7 +126,7 @@ const ViewEmployee = () => {
               </button>
 
               <p className="text-center text-sm text-gray-500 mt-4">
-                By clicking "Contact", you agree to our terms of service and privacy policy.
+                By clicking 'Contact', you agree to our terms of service and privacy policy.
               </p>
             </div>
           </div>

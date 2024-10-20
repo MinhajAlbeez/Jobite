@@ -57,7 +57,7 @@ export default function LoginForm({ toggleForm }) {
   //     setServerError("An error occurred. Please try again.");
   //     toast.error(serverError);
   //   }
-  // };
+  // }; 
 
   const onSubmit = async (data) => {
     try {
@@ -165,7 +165,7 @@ export default function LoginForm({ toggleForm }) {
           </div>
         </form>
         <p className="text-center mt-6">
-          Don't have an account?{" "}
+          Dont have an account?{" "}
           <button
             type="button"
             onClick={toggleForm}
