@@ -56,31 +56,66 @@ const Navbar = () => {
   //   }, 2000);
   // };
 
+  // const handleLogout = async () => {
+  //   try {
+  //     const response = await fetch("http://localhost:8000/api/users/logout", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         refreshToken: localStorage.getItem("refreshToken"),
+  //       }),
+  //     });
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       // toast.error(errorData.message || "Logout failed. Please try again.");
+  //       return;
+  //     }
+  //     dispatch(logout());
+  //     toast.success("Logged out successfully!");
+  //     setTimeout(() => {
+  //       window.location.href = "/user-auth"; // Redirect to login page
+  //     }, 2000);
+  //   } catch (error) {
+  //     toast.error("An error occurred during logout. Please try again.");
+  //   }
+  // };
+
   const handleLogout = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/api/users/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          refreshToken: localStorage.getItem("refreshToken"),
-        }),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        // toast.error(errorData.message || "Logout failed. Please try again.");
+    if (typeof window === "undefined") {
+        // Avoids accessing localStorage on the server side
+        toast.error("Unable to logout. Please try again.");
         return;
-      }
-      dispatch(logout());
-      toast.success("Logged out successfully!");
-      setTimeout(() => {
-        window.location.href = "/user-auth"; // Redirect to login page
-      }, 2000);
-    } catch (error) {
-      toast.error("An error occurred during logout. Please try again.");
     }
-  };
+
+    try {
+        const refreshToken = localStorage.getItem("refreshToken");
+        const response = await fetch("http://localhost:8000/api/users/logout", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                refreshToken: refreshToken,
+            }),
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            toast.error(errorData.message || "Logout failed. Please try again.");
+            return;
+        }
+        dispatch(logout());
+        toast.success("Logged out successfully!");
+        setTimeout(() => {
+            window.location.href = "/user-auth"; // Redirect to login page
+        }, 2000);
+    } catch (error) {
+        toast.error("An error occurred during logout. Please try again.");
+    }
+};
+
 
   return (
     <>
