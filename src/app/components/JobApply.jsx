@@ -55,21 +55,8 @@ const JobApplyModal = ({ isVisible, onClose }) => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
 
-  useEffect(() => {
-    const savedMode = localStorage.getItem("darkMode");
-    if (savedMode) {
-      setDarkMode(JSON.parse(savedMode));
-    }
-  }, []);
 
-  useEffect(() => {
-    localStorage.setItem("darkMode", JSON.stringify(darkMode));
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
