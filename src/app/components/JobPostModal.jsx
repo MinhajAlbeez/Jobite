@@ -55,7 +55,7 @@ const JobPostModal = ({ isVisible, onClose }) => {
     try {
       const response = await axios.post(
         // "http://localhost:8000/jobposts/create",
-        "http://jobite-backend.vercel.app/jobposts/create",
+        "https://jobite-backend.vercel.app/jobposts/create",
         formData
       );
       console.log("Job Post Created:", response.data);

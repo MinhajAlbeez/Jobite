@@ -31,7 +31,7 @@ export const fetchJobPost = createAsyncThunk(
       const authToken = state.auth.accessToken || localStorage.getItem("accessToken"); // Get token from Redux or localStorage
       const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
       console.log("Access Token:", authToken);
-      const response = await axios.get("http://jobite-server.vercel.app/jobposts/get", {
+      const response = await axios.get("https://jobite-server.vercel.app/jobposts/get", {
         headers, // Include headers (with or without token)
       });
       console.log("Response Data:", response.data);

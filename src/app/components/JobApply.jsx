@@ -73,7 +73,7 @@ const JobApplyModal = ({ isVisible, onClose }) => {
     try {
       const response = await axios.post(
         // "http://localhost:8000/jobapply/create",
-        "http://jobite-backend.vercel.app/jobapply/create",
+        "https://jobite-backend.vercel.app/jobapply/create",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
