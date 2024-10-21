@@ -33,7 +33,7 @@ export const fetchInfo = createAsyncThunk(
 
       const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {}; // Conditionally set headers
 
-      const response = await axios.get("http://localhost:8000/info/getInfo", {
+      const response = await axios.get("http://jobite-server.vercel.app/info/getInfo", {
         headers,
       });
 
